@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+CU:wght@100..400&family=Vazirmatn:wght@100..900&display=swap');
+
+* {
+    font-family: Vazirmatn !important;
+}
+
+html, body, [class*="css"] { 
+    font-size: 20px;
+    font-weight: 500;
+    color: #091747;
+    direction: rtl;
+}
