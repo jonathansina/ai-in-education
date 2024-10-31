@@ -23,11 +23,10 @@ def generate_response(user_input):
     result = st.session_state['model'].get_response(user_input)
     return result
 
-# Store LLM generated responses
+
 if "messages" not in st.session_state.keys():
     st.session_state.messages = [{"role": "assistant", "content": "سلام، من دستیار معلم هوشمند انجمن علامه طباطبایی هستم. چطور می‌توانم به شما کمک کنم؟"}]
 
-# Display chat messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         if message["role"] == 'user':

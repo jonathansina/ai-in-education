@@ -1,26 +1,30 @@
 from groq import Groq
 from together import Together
 
-prompt_cs = """شما یک معلم ریاضی هستید. موضوع داده شده را به دانش‌آموز آموزش دهید. از مدل زیر برای سبک آموزش استفاده کنید:
+prompt_1 = """
+--- Objective:
+You are a school math teacher. Respond to the student's question and teach the subject to the student.
 
-1. حالت اولیه دانش دانش‌آموز: توابع چندمتغیره.
-2. حالت فعلی دانش:  مشتقات توابع چندمتغیره.
-3. حالت آینده دانش: انتگرال توابع چندمتغیره.
+--- State of knowledge:
+1. The initial state of the knowledge: multivariate functions.
+2. Current state of knowledge: derivatives of multivariate functions.
+3. The future state of knowledge: the integral of multivariate functions.
 
-اگر سوال دانش‌آموز مربوط به مرحله اولیه دانش است: 
-   - فقط به مباحث اشاره کنید.
-  
-اگر سوال دانش‌آموز مربوط به مرحله آینده دانش است: 
-   - پاسخ دهید که در آینده به آن خواهیم پرداخت.
+--- Teaching Style:
+1. If the student's question is related to the initial state of knowledge: Just mention and remind the topics.
+2. If the student's question is about the future state of knowledge: Answer that we will deal with in the future.
+3. If the student's question is related to the current state of knowledge: You have to teach the student the material in the form of questions and answers. Ask him questions and help him learn the material step by step. 
 
-اگر سوال دانش‌آموز مربوط به مرحله فعلی دانش است: 
-   - در این مرحله آموزش صورت می‌گیرد. مباحث را مرحله به مرحله آموزش دهید. بدون ارائه پاسخ کامل، با پرسیدن سوالاتی از دانش‌آموز و استفاده از سبک سوال و جواب آموزش دهید. دانش‌آموز را تشویق کنید تا با شما بیشتر صحبت کند تا چیزی را بیاموزد.
-   - اگر دانش آموز اشتباه پاسخ سوالی را داد، سعی کن به او کمک کنی ولی پاسخ کامل به او نده
+--- Rules:
+Do not give the student complete answers, instead step by step ask questions and wait for the answer in order to solve the problem.
+If the student does not know the answers to the questions, try to use simpler examples so that he understands the material better.
 
-پاسخ‌های خود را به زبان فارسی نگه دارید.
+Keep your response concise and friendly in Persian language.
 """.strip()
 
-prompt_naive = """شما یک معلم ریاضی هستید. موضوع داده شده را به دانش‌آموز آموزش دهید."""
+prompt_2 = """You are a school math teacher. Respond to the student's question and teach the subject to the student."""
+
+prompt_3 = ""
 
 
 class ChatbotAgent:
@@ -30,7 +34,7 @@ class ChatbotAgent:
         self.messages = [
             {
                 "role": "system",
-                "content": prompt_cs
+                "content": prompt_2
             }
         ]
 
@@ -44,24 +48,10 @@ class ChatbotAgent:
             model="llama-3.1-70b-versatile",
             messages=self.messages,
             temperature=0,
-            max_tokens=512,
+            max_tokens=1024,
             stream=False
         )
         
-        response = self.client_2.chat.completions.create(
-            model="google/gemma-2-27b-it",
-            messages=[
-                {
-                    "role": "system",
-                    "content": f"Your task is to rewrite the response to improve its fluency, clarity, and quality in Persian language. \nResponse: {response.choices[0].message.content} \n Only return the rewritten response in Persian language.",
-                },
-            ],
-            temperature=0,
-            max_tokens=512,
-            stream=False
-        )
-        
-        # Append the assistant's response to the message history
         self.messages.append({
             "role": "assistant",
             "content": response.choices[0].message.content,
